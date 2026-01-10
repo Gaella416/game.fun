@@ -1,0 +1,43 @@
+body {
+    background-color:#1F8361; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+#carCanvas {
+    background: linear-gradient(#1F8361, #2eb383); 
+    border: 5px solid #e6f059; 
+    border-radius: 15px;
+    display: block;
+    margin: 20px auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+#game-ui {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.logo img {
+    height: 100px; 
+  align-self: flex-end;
+}
+.controls-hint {
+    color: #e6f059;
+    font-style: italic;
+}
+.accelerating #carCanvas {
+    filter: brightness(1.1) saturate(1.2);
+    border-color: #e6f059;
+}
+@keyframes lowFuelFlash {
+    0% { background-color: #1F8361; }
+    50% { background-color: #7d1f1f; }
+    100% { background-color: #1F8361; }
+}
+
+.low-fuel-warning {
+    animation: lowFuelFlash 0.5s infinite;
+}

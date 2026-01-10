@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car game</title>
+    <link rel="stylesheet" href="car.css">
+</head>
+
+<body>
+<header>
+        
+        <div class="logo">
+            <a href="http://127.0.0.1:3000/base.html?serverWindowId=4f29c339-f3e0-4e33-916f-40df381c5678"><img src="logo.png" alt="Game.fun"></a>
+   </div>
+    </header>
+    <main>
+    <div class="game-container-car">
+    <div id="game-ui">
+        Distance: <span id="distance">0</span>m
+        <button onclick="resetCarGame()">Restart</button>
+    </div>
+    <canvas id="carCanvas" width="800" height="400"></canvas>
+    <p class="controls-hint">Hold <b>SPACE</b> or <b>Tap</b> to Accelerate!</p>
+</div>
+</main>
+</body>
+<script>
+
+CarGame.items = [];
+CarGame.fuel = 100;
+CarGame.coins = 0;
+
+CarGame.spawnItem = function() {
+    let type = Math.random() > 0.8 ? 'fuel' : 'coin';
+    let itemX = this.scrollOffset + 900; // Spawn just off-screen
+    let itemY = this.terrain[Math.floor(itemX % 2000)] - 40;
+    this.items.push({ x: itemX, y: itemY, type: type, collected: false });
+};
+
+CarGame.update = function() {
+    let groundY = this.terrain[Math.floor((this.car.x + this.scrollOffset) % 2000)];
+    
+    if (this.car.isAccelerating && this.fuel > 0) {
+        this.speed = Math.min(this.speed + 0.1, 8);
+        this.fuel -= 0.2; 
+    } else {
+        this.speed *= 0.98;
+        if (this.fuel <= 0) this.speed *= 0.95;
+    }
+
+    this.scrollOffset += this.speed;
+
+        this.items.forEach(item => {
+        let dx = (item.x - this.scrollOffset) - this.car.x;
+        let dy = item.y - this.car.y;
+        let distance = Math.sqrt(dx*dx + dy*dy);
+
+        if (distance < 30 && !item.collected) {
+            item.collected = true;
+            if (item.type === 'fuel') this.fuel = Math.min(this.fuel + 30, 100);
+            if (item.type === 'coin') this.coins += 10;
+        }
+    });
+
+    
+    if (Math.floor(this.scrollOffset) % 500 === 0) this.spawnItem();
+    
+   this.items = this.items.filter(i => !i.collected && i.x > this.scrollOffset - 100);
+};
+
+CarGame.draw = function() {
+
+
+    this.items.forEach(item => {
+        this.ctx.fillStyle = item.type === 'coin' ? '#e6f059' : '#ff4f4f';
+        this.ctx.beginPath();
+        this.ctx.arc(item.x - this.scrollOffset, item.y, 10, 0, Math.PI*2);
+        this.ctx.fill();
+        this.ctx.fillStyle = "white";
+        this.ctx.fillText(item.type === 'coin' ? '$' : 'F', item.x - this.scrollOffset - 4, item.y + 4);
+    });
+
+    // Draw UI Overlay
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "bold 20px Arial";
+    this.ctx.fillText(`Fuel: ${Math.floor(this.fuel)}%`, 20, 30);
+    this.ctx.fillText(`Coins: ${this.coins}`, 20, 60);
+
+    // Fuel Bar Graphic
+    this.ctx.fillStyle = "rgba(255,255,255,0.3)";
+    this.ctx.fillRect(20, 35, 100, 10);
+    this.ctx.fillStyle = this.fuel > 20 ? "#e6f059" : "red";
+    this.ctx.fillRect(20, 35, this.fuel, 10);
+};
+</script>
+</html>

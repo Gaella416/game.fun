@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coloring game</title>
+    <link rel="stylesheet" href="coloring.css">
+</head>
+<body>
+    <header>
+        
+        <div class="logo">
+            <a href="http://127.0.0.1:3000/base.html?serverWindowId=4f29c339-f3e0-4e33-916f-40df381c5678"><img src="logo.png" alt="Game.fun"></a>
+   </div>
+    </header>
+
+    <main>
+    <div class="coloring-container">
+    <canvas id="colorCanvas" width="600" height="400" style="border:1px solid green;"></canvas>
+    <div class="palette">
+        <input type="color" id="colorPicker" value="#ff0000">
+        <button onclick="clearCanvas()">Clear</button>
+    </div>
+</div>
+</main>
+</body>
+<script>
+   const canvas = document.getElementById('colorCanvas');
+const ctx = canvas.getContext('2d');
+let painting = false;
+
+function startPosition(e) {
+    painting = true;
+    draw(e);
+}
+
+function finishedPosition() {
+    painting = false;
+    ctx.beginPath();
+}
+
+function draw(e) {
+    if (!painting) return;
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = document.getElementById('colorPicker').value;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+}
+
+canvas.addEventListener('mousedown', startPosition);
+canvas.addEventListener('mouseup', finishedPosition);
+canvas.addEventListener('mousemove', draw);
+</script>
+</html>

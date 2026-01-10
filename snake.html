@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="snake.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+           <a href="http://127.0.0.1:3000/base.html?serverWindowId=4f29c339-f3e0-4e33-916f-40df381c5678"><img src="logo.png" alt="Game.fun"></a>
+        </div>
+    </header>
+
+    <main>
+    <div class="game-wrapper">
+    <div id="score-board">Score: <span id="score">0</span></div>
+    <canvas id="snakeGame" width="400" height="400"></canvas>
+    <div class="controls">
+        <p>Use Arrow Keys or WASD to move</p>
+        <button onclick="resetGame()">Restart Game</button>
+    </div>
+</div>
+</main>
+</body>
+<script>
+const canvas = document.getElementById("snakeGame");
+const ctx = canvas.getContext("2d");
+const scoreElement = document.getElementById("score");
+
+// High Score Setup
+let highScore = localStorage.getItem("snakeHighScore") || 0;
+// You can add a <span id="high-score"></span> in your HTML to show this
+
+let box = 20;
+let score = 0;
+let snake = [{ x: 9 * box, y: 10 * box }];
+let food = {
+    x: Math.floor(Math.random() * 19 + 1) * box,
+    y: Math.floor(Math.random() * 19 + 1) * box
+};
+let d;
+
+document.addEventListener("keydown", direction);
+
+function direction(event) {
+    let key = event.keyCode;
+    if((key == 37 || key == 65) && d != "RIGHT") d = "LEFT";
+    else if((key == 38 || key == 87) && d != "DOWN") d = "UP";
+    else if((key == 39 || key == 68) && d != "LEFT") d = "RIGHT";
+    else if((key == 40 || key == 83) && d != "UP") d = "DOWN";
+}
+
+function draw() {
+    ctx.fillStyle = "#1a1a1a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for(let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = (i == 0) ? "#e6f059" : "#8dc24c";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    }
+
+    ctx.fillStyle = "#ff4f4f";
+    ctx.fillRect(food.x, food.y, box, box);
+
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    if( d == "LEFT") snakeX -= box;
+    if( d == "UP") snakeY -= box;
+    if( d == "RIGHT") snakeX += box;
+    if( d == "DOWN") snakeY += box;
+
+    if(snakeX == food.x && snakeY == food.y) {
+        score++;
+        scoreElement.innerHTML = score;
+        
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("snakeHighScore", highScore);
+        }
+        
+        food = {
+            x: Math.floor(Math.random() * 19 + 1) * box,
+            y: Math.floor(Math.random() * 19 + 1) * box
+        };
+    } else {
+        snake.pop(); 
+    }
+
+    let newHead = { x: snakeX, y: snakeY };
+
+    if(snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+    gameOver();
+    }
+
+    snake.unshift(newHead);
+}
+
+function gameOver() {
+    score = 0;
+    scoreElement.innerHTML = score;
+    snake = [{ x: 9 * box, y: 10 * box }];
+    d = null;
+    resetGame();
+}
+
+function collision(head, array) {
+    for(let i = 0; i < array.length; i++) {
+        if(head.x == array[i].x && head.y == array[i].y) return true;
+    }
+    return false;
+}
+
+let game = setInterval(draw, 100);
+</script>
+</html>
