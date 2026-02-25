@@ -16,7 +16,20 @@ header {
     display: flex;
     justify-content: flex-start;
 }
+.upload-section {
+    margin-top: 50px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    border: 2px dashed #e6f059;
+}
 
+.upload-section input {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
 .logo img {
    height:auto;
    width:150px;

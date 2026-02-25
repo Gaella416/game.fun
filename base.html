@@ -40,6 +40,12 @@
             <a class="car" href="http://127.0.0.1:3000/car.html?serverWindowId=5a4b6c7d-8e9f-0123-4567-89abcdef1234">Car game</a>
             </div>
         </div>
+    <div class="upload-section">
+    <h3>Add a New Game</h3>
+    <input type="text" id="newGameName" placeholder="Game Name">
+    <input type="file" id="newGameImage" accept="image/*">
+    <button onclick="addNewGame()">Upload & Add</button>
+</div>
     </main>
 
     <script>
@@ -57,6 +63,37 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
    
+}
+function addNewGame() {
+    const name = document.getElementById('newGameName').value;
+    const imageFile = document.getElementById('newGameImage').files[0];
+    const container = document.querySelector('.game-container');
+
+    if (!name || !imageFile) {
+        alert("Please provide a name and an image.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const newCard = document.createElement('div');
+        newCard.classList.add('game-card');
+        newCard.onclick = () => playGame(name);
+
+        newCard.innerHTML = `
+            <div class="circle-img" style="background-color: #ddd;">
+                <img src="${e.target.result}" alt="${name}">
+            </div>
+            <p>${name} game</p>
+        `;
+
+        container.appendChild(newCard);
+        
+        document.getElementById('newGameName').value = '';
+        document.getElementById('newGameImage').value = '';
+    };
+
+    reader.readAsDataURL(imageFile);
 }
 
     </script>
